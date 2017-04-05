@@ -6,7 +6,7 @@ import java.util.Scanner;
 /**
  * Created by kenzi on 05/04/2017.
  */
-public class Main {
+class Main {
     public static void main(String[] args) throws IOException {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter a word!");
@@ -25,6 +25,6 @@ public class Main {
         }
 
         AsciiConverter converter = new AsciiConverter();
-        converter.convert(word);
+        converter.convert(word.toUpperCase());
     }
 }

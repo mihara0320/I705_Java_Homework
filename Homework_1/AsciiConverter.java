@@ -10,7 +10,7 @@ import java.io.IOException;
  * Created by kenzi on 05/04/2017.
  */
 
-public class AsciiConverter {
+class AsciiConverter {
 
     static void convert(String word) throws IOException {
 
