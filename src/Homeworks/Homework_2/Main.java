@@ -5,8 +5,10 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 /**
@@ -24,35 +26,40 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         StackPane app = new StackPane();
         primaryStage.setScene(new Scene(app, WINDOW_WIDHT, WINDOW_HEIGHT));
-        primaryStage.setTitle("Tetori Symbol Generator");
+        primaryStage.setTitle("Tetoris Symbol Generator");
 
-        Pane stage = new Pane();
-        stage.setLayoutY(WINDOW_WIDHT);
-        stage.setLayoutY(WINDOW_HEIGHT);
+        BorderPane stage = new BorderPane();
         app.getChildren().add(stage);
+
+        Pane resultPane = new Pane();
+        resultPane.setLayoutX(WINDOW_WIDHT);
+        resultPane.setLayoutY(WINDOW_HEIGHT);
+        stage.setCenter(resultPane);
+
+        Pane btnPane = new Pane();
+        btnPane.setLayoutX(WINDOW_WIDHT/2);
+        stage.setBottom(btnPane);
 
         Button btn = new Button();
         btn.setText("Get New Symbol!");
+
         btn.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent event) {
-                System.out.println("Generated!");
-                Figure figure = null;
-                if (figure == null){
-                    figure = generator.createFigure();
-                    stage.getChildren().addAll(figure);
-                } else {
-                    figure = null;
-                    stage.getChildren().remove(figure);
+                try {
+                    resultPane.getChildren().clear();
+                    System.out.println("Generated!");
+                    Figure figure = generator.createFigure();
+                    resultPane.getChildren().addAll(figure);
+                } catch (Exception e) {
+
                 }
-
-
             }
         });
-        btn.setLayoutX(WINDOW_WIDHT/2 - 50);
-        btn.setLayoutY(WINDOW_HEIGHT-50);
-        stage.getChildren().add(btn);
+        btn.setLayoutX(WINDOW_WIDHT/2 - 30);
+        btn.setLayoutY(-30);
+        btnPane.getChildren().add(btn);
 
         primaryStage.show();
     }
