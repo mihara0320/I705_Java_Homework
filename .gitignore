@@ -29,6 +29,7 @@
 
 # IntelliJ
 /out/
+/target/
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
@@ -46,3 +47,7 @@ crashlytics-build.properties
 fabric.properties
 
 *.png
+
+# Maven
+log/
+target/
