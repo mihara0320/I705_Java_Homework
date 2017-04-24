@@ -31,7 +31,7 @@ public class Main extends Application {
         BorderPane stage = new BorderPane();
         app.getChildren().add(stage);
 
-        Pane resultPane = new Pane();
+        final Pane resultPane = new Pane();
         resultPane.setLayoutX(WINDOW_WIDHT);
         resultPane.setLayoutY(WINDOW_HEIGHT);
         stage.setCenter(resultPane);

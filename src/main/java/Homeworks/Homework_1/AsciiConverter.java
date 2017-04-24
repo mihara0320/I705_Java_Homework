@@ -28,7 +28,10 @@ class AsciiConverter {
             StringBuilder sb = new StringBuilder();
             for (int x = 0; x < 144; x++)
                 sb.append(image.getRGB(x, y) == -16777216 ? " " : image.getRGB(x, y) == -1 ? "#" : "*");
-            if (sb.toString().trim().isEmpty()) continue;
+
+            if (sb.toString().trim().isEmpty()) {
+                continue;
+            }
 
             System.out.println(sb);
 
