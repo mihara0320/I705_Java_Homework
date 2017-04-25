@@ -10,7 +10,7 @@ package Homeworks.Homework_3;
  */
 public class NewsListCompiler {
 
-    public static void main(String[] args) throws IOException, URISyntaxException, ParseException {
+    public static void main(String[] args) throws IOException, URISyntaxException, ParseException, java.text.ParseException {
 
         HeadlineCollector headlineCollector = new HeadlineCollector();
         headlineCollector.run();
