@@ -1,14 +1,12 @@
-package Homeworks.Homework_4.src.entity;
+package Homeworks.Homework_4.entity;
 
 import javax.persistence.*;
-import java.util.Date;
 
 /**
  * Created by masaki on 4/26/2017.
  */
 @Entity
 @Table(name = "NewsHeadlines")
-
 public class NewsHeadlines {
 
     @Id
