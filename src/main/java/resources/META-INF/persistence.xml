@@ -6,7 +6,7 @@
     <persistence-unit name="test1" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
-        <class>Homeworks.Homework_4.entity.Person</class>
+        <class>Homeworks.Homework_4.entity.TitleLog</class>
         <class>Homeworks.Homework_4.entity.NewsHeadlines</class>
         <class>Homeworks.Homework_4.entity.Log</class>
 

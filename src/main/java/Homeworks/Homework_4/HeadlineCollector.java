@@ -2,6 +2,7 @@ package Homeworks.Homework_4;
 
 import Homeworks.Homework_4.entity.Log;
 import Homeworks.Homework_4.entity.NewsHeadlines;
+import Homeworks.Homework_4.entity.TitleLog;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -12,6 +13,7 @@ import java.io.IOException;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Scanner;
 
 /**
  * Created by masaki on 4/29/2017.
@@ -31,8 +33,9 @@ public class HeadlineCollector {
 
             getHeadlines();
 
-            em.close();
             em.getTransaction().commit();
+            em.close();
+
         } else {
             System.out.println();
         }
@@ -62,17 +65,35 @@ public class HeadlineCollector {
             System.out.println("[-] DB does not exist");
         }
     }
-    public static void cleanDB(){
+    public static void search(){
         em = entityManagerFactory.createEntityManager();
         em.getTransaction().begin();
 
-        List<Log> logs = em.createQuery("DELETE * FROM Log", Log.class).getResultList();
-        List<NewsHeadlines> newsHeadlines = em.createQuery("DELETE * FROM NewsHeadlines", NewsHeadlines.class).getResultList();
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter keywords :");
+        String keyword = scanner.next();
 
-        em.persist(logs);
-        em.persist(newsHeadlines);
+        TypedQuery<NewsHeadlines> query = em.createQuery("from NewsHeadlines where title  like :keyword", NewsHeadlines.class);
+        query.setParameter("keyword", "%" + keyword + "%");
+
+        List<NewsHeadlines> result = query.getResultList();
+
+        if(result != null){
+            for (NewsHeadlines headline: result) {
+                String title = headline.getTitle();
+                String url = headline.getURL();
+                System.out.println("==============================================================");
+                System.out.println("Title: " + title);
+                System.out.println("URL: " + url );
+                System.out.println("==============================================================");
+            }
+        } else {
+            System.out.println("Nothing found");
+        }
+
         em.close();
         em.getTransaction().commit();
+
     }
     private static boolean getConnection(){
         try {
@@ -101,32 +122,31 @@ public class HeadlineCollector {
             String title = headline.select("h3").text();
             String url = getLink(String.valueOf(headline.attr("href")));
 
+            TypedQuery<NewsHeadlines> query = em.createQuery("from NewsHeadlines where title like(:headline)", NewsHeadlines.class);
+
+            query.setParameter("headline", title);
+            query.setMaxResults(1);
             NewsHeadlines newsHeadlines = null;
 
-            TypedQuery<NewsHeadlines> query = null;
             try {
-                query = em.createQuery("from NewsHeadlines where firstName like(:title)", NewsHeadlines.class);
-                query.setParameter("title", title);
-                query.setMaxResults(1);
-                try {
-                    newsHeadlines = query.getSingleResult();
-                } catch (NoResultException e) {}
-            } catch (Exception e) {}
+                if(query.getSingleResult().getTitle() == null){
+                    newsHeadlines = new NewsHeadlines();
+                    newsHeadlines.setTitle(title);
+                    newsHeadlines.setURL(url);
+                    em.persist(newsHeadlines);
+                }
+            } catch (NoResultException e) {}
 
-            if (newsHeadlines == null) {
-                newsHeadlines = new NewsHeadlines();
-                newsHeadlines.setTitle(title);
-                newsHeadlines.setURL(url);
 
-                em.persist(newsHeadlines);
-                Log log = new Log();
-                log.setDate(date);
-                log.setNewsHeadlines(newsHeadlines);
-                em.persist(log);
-            }
+            Log log = new Log();
+            log.setDate(date);
+            log.setNewsHeadlines(newsHeadlines);
+            em.persist(log);
+
         }
 
     }
+
 
 }
 

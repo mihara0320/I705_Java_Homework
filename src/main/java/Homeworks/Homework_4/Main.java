@@ -15,7 +15,7 @@ public class Main {
             System.out.println("\nMenu Options\n");
             System.out.println("(1) - run program");
             System.out.println("(2) - list log");
-            System.out.println("(3) - clean DB");
+            System.out.println("(3) - search");
 
             System.out.print("Please enter your selection:\t");
             int choice = scanner.nextInt();
@@ -24,7 +24,7 @@ public class Main {
             switch (choice) {
                 case 1: headlineCollector.run(); break;
                 case 2: headlineCollector.listLogs(); break;
-                case 3: headlineCollector.cleanDB(); break;
+                case 3: headlineCollector.search(); break;
                 default: System.exit(0);
             }
         }
