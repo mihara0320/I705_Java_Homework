@@ -1,8 +1,6 @@
 package Homeworks.Homework_4;
 
 import Homeworks.Homework_4.entity.Log;
-import Homeworks.Homework_4.entity.NewsHeadlines;
-import Homeworks.Homework_4.entity.TitleLog;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -13,6 +11,7 @@ import java.io.IOException;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 /**
@@ -27,18 +26,8 @@ public class HeadlineCollector {
     static Elements headlines;
 
     public static void run() {
-        if(getConnection()){
-            em = entityManagerFactory.createEntityManager();
-            em.getTransaction().begin();
-
-            getHeadlines();
-
-            em.getTransaction().commit();
-            em.close();
-
-        } else {
-            System.out.println();
-        }
+        getConnection();
+        getHeadlines();
     }
     public static void listLogs() {
         try {
@@ -49,8 +38,8 @@ public class HeadlineCollector {
             for (Log log : list) {
 
                 Date date = log.getDate();
-                String title = log.getNewsHeadlines().getTitle();
-                String url = log.getNewsHeadlines().getURL();
+                String title = log.getTitle();
+                String url = log.getUrl();
                 System.out.println("==============================================================");
                 System.out.println("Date: " + date);
                 System.out.println("Title: " + title);
@@ -62,7 +51,9 @@ public class HeadlineCollector {
             em.close();
             em.getTransaction().commit();
         } catch (Exception e) {
-            System.out.println("[-] DB does not exist");
+            System.out.println("[-] ERROR");
+            System.out.println(e);
+//            System.out.println("[-] DB does not exist");
         }
     }
     public static void search(){
@@ -71,38 +62,51 @@ public class HeadlineCollector {
 
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter keywords :");
-        String keyword = scanner.next();
+        String line = scanner.nextLine();
+        String[] keywords = line.split(" ");
 
-        TypedQuery<NewsHeadlines> query = em.createQuery("from NewsHeadlines where title  like :keyword", NewsHeadlines.class);
-        query.setParameter("keyword", "%" + keyword + "%");
+        System.out.println("Finding headlines match with keywords \""+ line + "\"");
+        String queryString = "FROM Log WHERE";
 
-        List<NewsHeadlines> result = query.getResultList();
+        for (int i = 0; i < keywords.length; i++) {
+            if(i==0){
+                queryString += " (LOWER(title) LIKE LOWER(:keyword" + i + "))";
+            }else {
+                queryString += " AND (LOWER(title) LIKE LOWER(:keyword" + i + "))";
+            }
+        }
+        TypedQuery<Log> query = em.createQuery(queryString, Log.class);
+        for (int i = 0; i < keywords.length; i++) {
+            query.setParameter("keyword" + i, "%" + keywords[i] + "%");
+
+        }
+
+        List<Log> result = query.getResultList();
 
         if(result != null){
-            for (NewsHeadlines headline: result) {
-                String title = headline.getTitle();
-                String url = headline.getURL();
+            for (Log log: result) {
                 System.out.println("==============================================================");
-                System.out.println("Title: " + title);
-                System.out.println("URL: " + url );
+                System.out.println("Title: " + log.getTitle());
+                System.out.println("URL: " + log.getUrl());
                 System.out.println("==============================================================");
             }
         } else {
-            System.out.println("Nothing found");
+            System.out.println("[-] Nothing found");
         }
 
         em.close();
         em.getTransaction().commit();
 
     }
-    private static boolean getConnection(){
-        try {
-            document = Jsoup.connect(bbc).get();
-            System.out.println("[+] Page loaded");
-            return true;
-        } catch (IOException e) {
-            System.out.println("[-] Could not load the page");
-            return false;
+    private static void getConnection(){
+        while (true){
+            try {
+                document = Jsoup.connect(bbc).get();
+                System.out.println("[+] Page loaded");
+                break;
+            } catch (IOException e) {
+                System.out.println("Now Loading ...");
+            }
         }
     }
     private static String getLink(String path) {
@@ -115,39 +119,26 @@ public class HeadlineCollector {
         return link;
     }
     private static void getHeadlines(){
+        em = entityManagerFactory.createEntityManager();
+        em.getTransaction().begin();
         Date date = new Date();
-        headlines = document.select("a.gs-c-promo-heading");
-        for (Element headline : headlines) {
 
+        headlines = document.select("a.gs-c-promo-heading");
+
+        for (Element headline : headlines) {
             String title = headline.select("h3").text();
             String url = getLink(String.valueOf(headline.attr("href")));
 
-            TypedQuery<NewsHeadlines> query = em.createQuery("from NewsHeadlines where title like(:headline)", NewsHeadlines.class);
-
-            query.setParameter("headline", title);
-            query.setMaxResults(1);
-            NewsHeadlines newsHeadlines = null;
-
-            try {
-                if(query.getSingleResult().getTitle() == null){
-                    newsHeadlines = new NewsHeadlines();
-                    newsHeadlines.setTitle(title);
-                    newsHeadlines.setURL(url);
-                    em.persist(newsHeadlines);
-                }
-            } catch (NoResultException e) {}
-
-
-            Log log = new Log();
-            log.setDate(date);
-            log.setNewsHeadlines(newsHeadlines);
-            em.persist(log);
+                Log log = new Log();
+                log.setDate(date);
+                log.setTitle(title);
+                log.setUrl(url);
+                em.persist(log);
 
         }
-
+        em.getTransaction().commit();
+        em.close();
     }
-
-
 }
 
 

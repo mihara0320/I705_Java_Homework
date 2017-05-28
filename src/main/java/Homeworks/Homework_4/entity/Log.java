@@ -16,8 +16,14 @@ public class Log {
     @Column(nullable = false)
     private Date date;
 
-    @ManyToOne
-    private NewsHeadlines newsHeadlines;
+    @Column(nullable = false)
+    private String title;
+
+    @Column(nullable = false)
+    private String url;
+
+//    @Column(nullable = false)
+//    private NewsHeadlines newsHeadlines;
 
 
     public Long getId() {
@@ -30,7 +36,22 @@ public class Log {
     public Date getDate() { return date; }
     public void setDate(Date date) { this.date = date; }
 
-    public NewsHeadlines getNewsHeadlines() { return newsHeadlines; }
-    public void setNewsHeadlines(NewsHeadlines newsHeadlines) { this.newsHeadlines = newsHeadlines; }
+    public String getTitle() {
+        return title;
+    }
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    //    public NewsHeadlines getNewsHeadlines() { return newsHeadlines; }
+//    public void setNewsHeadlines(NewsHeadlines newsHeadlines) { this.newsHeadlines = newsHeadlines; }
 
 }
